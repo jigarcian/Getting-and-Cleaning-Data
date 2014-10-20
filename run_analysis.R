@@ -1,59 +1,80 @@
-# Source of data for this project: https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+# 1. Merge the training and the test sets to create one data set.
 
-# This R script does the following:
+# assign subject ID for test and training data sets
 
-# 1. Merges the training and the test sets to create one data set.
+subjectTest <- read.table('test/subject_test.txt', col.names=c('Subject'))
+subjectTrain <- read.table('train/subject_train.txt', col.names=c('Subject'))
 
-tmp1 <- read.table("train/X_train.txt")
-tmp2 <- read.table("test/X_test.txt")
-X <- rbind(tmp1, tmp2)
+# combine subject records from test and training data sets
+subjects <- rbind(subjectTest,subjectTrain)
 
-tmp1 <- read.table("train/subject_train.txt")
-tmp2 <- read.table("test/subject_test.txt")
-S <- rbind(tmp1, tmp2)
+# read in features measurements from test and training data sets
+featuresTest <- read.table('test/X_test.txt')
+featuresTrain <- read.table('train/X_train.txt')
 
-tmp1 <- read.table("train/y_train.txt")
-tmp2 <- read.table("test/y_test.txt")
-Y <- rbind(tmp1, tmp2)
+# combine test and training sets for features
+features <- rbind(featuresTest,featuresTrain)
 
-# 2. Extracts only the measurements on the mean and standard deviation for each measurement.
+# copy feature labels
+feature_labels <- read.table('features.txt', col.names=c('index', 'labels'))
 
-features <- read.table("features.txt")
-indices_of_good_features <- grep("-mean\\(\\)|-std\\(\\)", features[, 2])
-X <- X[, indices_of_good_features]
-names(X) <- features[indices_of_good_features, 2]
-names(X) <- gsub("\\(|\\)", "", names(X))
-names(X) <- tolower(names(X))
+# make feature_labels$labels the column name of features
+names(feature_labels)
+labels <- feature_labels$labels
+colnames(features) <- labels
 
-# 3. Uses descriptive activity names to name the activities in the data set.
+# -----------------------------------------------------------------------------
+# 2. Extract only the measurements on the mean and standard deviation for each measurement.
 
-activities <- read.table("activity_labels.txt")
-activities[, 2] = gsub("_", "", tolower(as.character(activities[, 2])))
-Y[,1] = activities[Y[,1], 2]
-names(Y) <- "activity"
+# subset the features table by selecting variables with labels that contain mean and standard deviation in their names
+feature_selected <- as.character(feature_labels$labels[grepl('mean()|std()', feature_labels$labels)])
 
-# 4. Appropriately labels the data set with descriptive activity names.
+# do not include meanFreq measurements
+feature_selected <- as.character(feature_selected[!grepl('meanFreq()', feature_selected)])
+features_means_stds <- features[,feature_selected]
 
-names(S) <- "subject"
-cleaned <- cbind(S, Y, X)
-write.table(cleaned, "merged_clean_data.txt")
+# read in activities from test and training sets
+activitiesTest <- read.table('test/y_test.txt')
+colnames(activitiesTest) <- 'Activity'
 
-# 5. Creates a 2nd, independent tidy data set with the average of each variable for each activity and each subject.
+activitiesTrain <- read.table('train/y_train.txt')
+colnames(activitiesTrain) <- 'Activity'
 
-uniqueSubjects = unique(S)[,1]
-numSubjects = length(unique(S)[,1])
-numActivities = length(activities[,1])
-numCols = dim(cleaned)[2]
-result = cleaned[1:(numSubjects*numActivities), ]
+# combine test and training sets for activities
+activities <- rbind(activitiesTest, activitiesTrain)
 
-row = 1
-for (s in 1:numSubjects) {
-    for (a in 1:numActivities) {
-        result[row, 1] = uniqueSubjects[s]
-        result[row, 2] = activities[a, 2]
-        tmp <- cleaned[cleaned$subject==s & cleaned$activity==activities[a, 2], ]
-        result[row, 3:numCols] <- colMeans(tmp[, 3:numCols])
-        row = row+1
-    }
-}
-write.table(result, "data_set_with_the_averages.txt")
+# ------------------------------------------------------------------------
+# 3. Use descriptive activity names to name the activities in the data set
+
+# descriptive names according to activity_labels.txt
+activities$Activity[activities$Activity=='1'] <- 'WALKING'
+activities$Activity[activities$Activity=='2'] <- 'WALKING_UPSTAIRS'
+activities$Activity[activities$Activity=='3'] <- 'WALKING_DOWNSTAIRS'
+activities$Activity[activities$Activity=='4'] <- 'SITTING'
+activities$Activity[activities$Activity=='5'] <- 'STANDING'
+activities$Activity[activities$Activity=='6'] <- 'LAYING'
+
+# ------------------------------------------------------------
+# 4. Appropriately labels the data set with descriptive names.
+
+# make variable names more descriptive by using full words and removing parentheses
+names(features_means_stds) <- gsub('Acc','Acceleration', names(features_means_stds))
+names(features_means_stds) <- gsub('Mag','Magnitude', names(features_means_stds))
+names(features_means_stds) <- gsub('Freq','Frequency', names(features_means_stds))
+names(features_means_stds) <- gsub('-mean','Mean', names(features_means_stds))
+names(features_means_stds) <- gsub('-std','StandardDeviation', names(features_means_stds))
+names(features_means_stds) <- gsub('\\(|\\)','', names(features_means_stds), perl=TRUE)
+
+
+# --------------------------------------------------------------------------------------
+# 5. Create a second, independent tidy data set with the average of each variable for each activity and each subject
+
+# combine all data sets
+all_data <- cbind(subjects,activities,features_means_stds)
+
+# get the average of each variable for each activity and subject (uses plyr)
+averagevar <- ddply(all_data, c("Subject","Activity"), numcolwise(mean))
+
+# save final dataset as average_variables.txt
+write.table(averagevar, file = "Proyect_averagevar.txt")
+
