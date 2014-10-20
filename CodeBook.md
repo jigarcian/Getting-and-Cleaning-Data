@@ -10,8 +10,7 @@ Source of the original data: https://d396qusza40orc.cloudfront.net/getdata%2Fpro
 
 The attached R script (run_analysis.R) performs the following to clean up the data:
 
-1. Merges the training and test sets to create one data set, namely
-The attached R script (run_analysis.R) performs the following to clean up the data:
+
 
 1. Merges the training and test sets to create one data set, namely
 train/X_train.txt with test/X_test.txt -- the result is a 10299 x 561 data frame, as in the original description ("Number of Instances: 10299" and "Number of Attributes: 561")
@@ -22,6 +21,7 @@ train/y_train.txt with test/y_test.txt -- the result is also a 10299 x 1 data fr
 
 2. Reads file features.txt and extracts only the measurements on the mean and standard deviation for each measurement.
 The result is a 10299 x 66 data frame, because only 66 out of 561 attributes are measurements on the mean and standard deviation. All measurements appear to be floating point numbers in the range (-1, 1).
+
 
 3. Reads activity_labels.txt and applies descriptive activity names to name the activities in the data set:
 walking
@@ -58,4 +58,7 @@ tgravityacc-mean-x
 tgravityacc-mean-y
 
 5. Finally, the script creates a 2nd, independent tidy data set with the average of each measurement for each activity and each subject.
-The result is saved as data_set_with_the_averages.txt, a 180x68 data frame, where as before, the first column contains subject IDs, the second column contains activity names (see below), and then the averages for each of the 66 attributes are in columns 3...68. There are 30 subjects and 6 activities, thus 180 rows in this data set with averages.
+The result is saved as "Proyect_averagevar.txt", a 180x68 data frame, where as before, the first column contains subject IDs, the second column contains activity names (see below), and then the averages for each of the 66 attributes are in columns 3...68. There are 30 subjects and 6 activities, thus 180 rows in this data set with averages. 
+
+
+"Subject" "Activity" "tBodyAccelerationelerationMean-X" "tBodyAccelerationelerationMean-Y" "tBodyAccelerationelerationMean-Z" "tBodyAccelerationelerationStandardDeviation-X" "tBodyAccelerationelerationStandardDeviation-Y" "tBodyAccelerationelerationStandardDeviation-Z" "tGravityAccelerationelerationMean-X" "tGravityAccelerationelerationMean-Y" "tGravityAccelerationelerationMean-Z" "tGravityAccelerationelerationStandardDeviation-X" "tGravityAccelerationelerationStandardDeviation-Y" "tGravityAccelerationelerationStandardDeviation-Z" "tBodyAccelerationelerationJerkMean-X" "tBodyAccelerationelerationJerkMean-Y" "tBodyAccelerationelerationJerkMean-Z" "tBodyAccelerationelerationJerkStandardDeviation-X" "tBodyAccelerationelerationJerkStandardDeviation-Y" "tBodyAccelerationelerationJerkStandardDeviation-Z" "tBodyGyroMean-X" "tBodyGyroMean-Y" "tBodyGyroMean-Z" "tBodyGyroStandardDeviation-X" "tBodyGyroStandardDeviation-Y" "tBodyGyroStandardDeviation-Z" "tBodyGyroJerkMean-X" "tBodyGyroJerkMean-Y" "tBodyGyroJerkMean-Z" "tBodyGyroJerkStandardDeviation-X" "tBodyGyroJerkStandardDeviation-Y" "tBodyGyroJerkStandardDeviation-Z" "tBodyAccelerationelerationMagnitudenitudeMean" "tBodyAccelerationelerationMagnitudenitudeStandardDeviation" "tGravityAccelerationelerationMagnitudenitudeMean" "tGravityAccelerationelerationMagnitudenitudeStandardDeviation" "tBodyAccelerationelerationJerkMagnitudenitudeMean" "tBodyAccelerationelerationJerkMagnitudenitudeStandardDeviation" "tBodyGyroMagnitudenitudeMean" "tBodyGyroMagnitudenitudeStandardDeviation" "tBodyGyroJerkMagnitudenitudeMean" "tBodyGyroJerkMagnitudenitudeStandardDeviation" "fBodyAccelerationelerationMean-X" "fBodyAccelerationelerationMean-Y" "fBodyAccelerationelerationMean-Z" "fBodyAccelerationelerationStandardDeviation-X" "fBodyAccelerationelerationStandardDeviation-Y" "fBodyAccelerationelerationStandardDeviation-Z" "fBodyAccelerationelerationJerkMean-X" "fBodyAccelerationelerationJerkMean-Y" "fBodyAccelerationelerationJerkMean-Z" "fBodyAccelerationelerationJerkStandardDeviation-X" "fBodyAccelerationelerationJerkStandardDeviation-Y" "fBodyAccelerationelerationJerkStandardDeviation-Z" "fBodyGyroMean-X" "fBodyGyroMean-Y" "fBodyGyroMean-Z" "fBodyGyroStandardDeviation-X" "fBodyGyroStandardDeviation-Y" "fBodyGyroStandardDeviation-Z" "fBodyAccelerationelerationMagnitudenitudeMean" "fBodyAccelerationelerationMagnitudenitudeStandardDeviation" "fBodyBodyAccelerationelerationJerkMagnitudenitudeMean" "fBodyBodyAccelerationelerationJerkMagnitudenitudeStandardDeviation" "fBodyBodyGyroMagnitudenitudeMean" "fBodyBodyGyroMagnitudenitudeStandardDeviation" "fBodyBodyGyroJerkMagnitudenitudeMean" "fBodyBodyGyroJerkMagnitudenitudeStandardDeviation"
